@@ -6,7 +6,7 @@ import pandas as pd
 import csv
 
 import os
-# idealmente, deveria ler todos os csv para uma lista, ai sim 
+# idealmente, deveria ler todos os csv para uma lista, ai sim transfgormar num df. Posteriormente deveria melhorar isso
 base_path = str(pathlib.Path(__file__).parent.resolve())
 def agglutinate_files(suffix):
     csv_files = [f"{base_path}/assets/{suffix}_small_files/{f}" for f in os.listdir(f"{base_path}/assets/{suffix}_small_files/") if f.endswith(".csv")]
