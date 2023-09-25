@@ -1,14 +1,20 @@
 import requests
 import json
+import glob
+import pathlib
+
 from datetime import datetime
+from agglutinate_csv import agglutinate_files
 import pandas as pd
 
 session = requests.Session()
 
-def get_data(suffix, filters):
+base_path = str(pathlib.Path(__file__).parent.resolve())
+
+def _get_data(suffix, filters):
     url = f"https://api.apps1.nsw.gov.au/eplanning/data/v0/Online{suffix}" 
     headers = {
-        "PageSize": "300",
+        "PageSize": "2500",
         "PageNumber": "1",
         "filters": json.dumps({ "filters": filters})
     }
@@ -21,20 +27,26 @@ def get_data(suffix, filters):
         next_page = session.get(url, headers=headers).json()
         yield next_page
 
-
+def _small_files(name, data):
+    print(f"Creating DataFrame small file ")
+    df = pd.DataFrame(data)
+    print(f"Writing data to CSV")
+    df.to_csv(f"{base_path}/assets/{name.lower()}_small_files/{name.lower()}_{str(datetime.timestamp(datetime.now())).replace('.', '')}.csv")
+    print(f"Wrote Small File")
+    del df
 
 def create_csv(name, filters):
     print(f"Getting data for {name} with filters {filters}")
     tmp_list = []
-    for page in get_data(name, filters):
-        tmp_list += page["Application"]
-    print(f"Creating dataframe with {len(tmp_list)} rows")
-    df = pd.DataFrame(tmp_list)
-    print(f"Writing dataframe to CSV")
-    df.to_csv(f"{name}.csv")
-    print(f"Wrote CSV")
-    del df
-    del tmp_list
+    for page in _get_data(name, filters):
+        print(f"page {page['PageNumber']} of {page['TotalPages']}")
+        _small_files(name, page["Application"])
+    print(f"Wrote CSVs")
+    print(f"Agglutinate")
+    current_df = agglutinate_files(name.lower())
+    current_df.to_csv(f"{base_path}/assets/{name.lower()}_{str(datetime.timestamp(datetime.now())).replace('.', '')}.csv") 
+    print(f"Agglutinated")
+    # criar trecho pra aglutinar
 
 def main():
     print("Starting main")
@@ -53,6 +65,8 @@ def main():
                 }
     create_csv("DA", da_filters)
     create_csv("CDC", cdc_filters)
+
+
     print("Finished main")
 
 if __name__ == '__main__':
