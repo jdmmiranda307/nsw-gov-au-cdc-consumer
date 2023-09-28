@@ -160,6 +160,4 @@ cython_debug/
 #.idea/
 
 # Assets files
-.csv
-.txt
 *_files
