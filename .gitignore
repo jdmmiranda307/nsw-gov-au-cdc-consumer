@@ -162,4 +162,4 @@ cython_debug/
 # Assets files
 .csv
 .txt
-assets/*
+*_files

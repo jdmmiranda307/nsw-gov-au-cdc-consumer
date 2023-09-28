@@ -25,7 +25,7 @@ def _get_dataframe_info(df, name):
     df_cols_unique = {}
     for col in df.columns:
         df_cols_unique[col]= df[col].unique()
-    with open(f"{base_path}/assets/{name}_full_file/{datetime.now().strftime('%Y-%m-%d')}/info.txt", 'w') as f:
+    with open(f"{base_path}/assets/{name}_full_files/{datetime.now().strftime('%Y-%m-%d')}/info.txt", 'w') as f:
         f.write(str(df_cols_unique))
 
 def _small_files(name, data):
@@ -43,7 +43,7 @@ def _small_files(name, data):
 def create_csv(name, request_params):
     print(f"Getting data for {name} of request {request_params}")
     tmp_list = []
-    current_path = f"{base_path}/assets/{name.lower()}_full_file/{datetime.now().strftime('%Y-%m-%d')}/"
+    current_path = f"{base_path}/assets/{name.lower()}_full_files/{datetime.now().strftime('%Y-%m-%d')}/"
     for page in get_data(name, request_params):
         print(f"page {page['PageNumber']} of {page['TotalPages']}")
         _small_files(name, page["Application"])
